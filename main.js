@@ -50,7 +50,6 @@ const weatherSymbol = [
     "fa-solid fa-snowflake",
     "fa-solid fa-snowflake",
     "fa-solid fa-snowflake"
-
 ];
 
 // Info for developer
@@ -72,30 +71,41 @@ setInterval(() => {
 
 // Fetch random advice API
 async function fetchRandomAdvice(){
-    const response = await fetch("https://api.adviceslip.com/advice");
-    const responseData = await response.json();
-    document.getElementById("randomAdvice").innerText=`"` + responseData.slip.advice + `"`;
+    try{
+        const response = await fetch("https://api.adviceslip.com/advice");
+        const responseData = await response.json();
+        document.getElementById("randomAdvice").innerText=`"` + responseData.slip.advice + `"`;
+    }
+    catch{
+        document.getElementById("randomAdvice").innerHTML=`<i class="fa-solid fa-triangle-exclamation" style="text-shadow: 0px 2px gray;"> Error A Problem Occurred!</i>`
+    }
 }
 
 // Fetch weather from Helsingborg
 async function fetchWeather(){
-    const response = await fetch("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/12.694512/lat/56.046467/data.json");
-    const responseData = await response.json();
-    // Info for developer
-    console.log(responseData);
-    document.getElementById("temp").innerHTML=Math.round(responseData.timeSeries[0].parameters[10].values) + "°";
-    document.getElementById("weatherSymbol").setAttribute("class", weatherSymbol[responseData.timeSeries[0].parameters[18].values]);
-    // Info for developer
-    console.log(responseData.timeSeries[0].parameters[18].values);
-    const tempPerDay = document.getElementById("tempPerDay");
-    tempPerDay.innerHTML="";
-    
-    // Display weather for 7 hour forwards
-    for(let i = 1; i<7; i++){
-        const addI = document.createElement("i");
-        tempPerDay.append(addI);
-        addI.setAttribute("class", weatherSymbol[responseData.timeSeries[i].parameters[18].values]);
+    try{
+        const response = await fetch("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/12.694512/lat/56.046467/data.json");
+        const responseData = await response.json();
+        // Info for developer
+        console.log(responseData);
+        document.getElementById("temp").innerHTML=Math.round(responseData.timeSeries[0].parameters[10].values) + "°";
+        document.getElementById("weatherSymbol").setAttribute("class", weatherSymbol[responseData.timeSeries[0].parameters[18].values]);
+        // Info for developer
+        console.log(responseData.timeSeries[0].parameters[18].values);
+        const tempPerDay = document.getElementById("tempPerDay");
+        tempPerDay.innerHTML="";
+        // Display weather for 7 hour forwards
+        for(let i = 1; i<7; i++){
+            const addI = document.createElement("i");
+            tempPerDay.append(addI);
+            addI.setAttribute("class", weatherSymbol[responseData.timeSeries[i].parameters[18].values]);
+        }
     }
+    catch{
+        document.getElementById("contentWeather").innerHTML=`<i class="fa-solid fa-triangle-exclamation" style="font-size:150px; margin-top:15%;"></i> <p style="top:0px; text-shadow: 0px 2px gray;">ERROR A PROBLEM OCCURRED!</p>`
+        document.getElementById("contentWeather").style="display:block; text-align:center;"
+    };
+    
 }
 
 // Switch for display month in text. P.S can be done with an array
